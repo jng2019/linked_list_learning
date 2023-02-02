@@ -7,52 +7,59 @@
 
 template<typename S>
 std::ostream &operator<<(std::ostream &out, const LinkedList<S> &list) {
-    return <#initializer#>;
+    Node<S>* current;
+    current = list.head;
+    while (current!= nullptr) {
+        std::cout << current->data << " ";
+        current=current->next;
+    }
+    std::cout << std::endl;
+    return out;
 }
 
 template<typename T>
 bool LinkedList<T>::remove(const T &givenItem) {
-    return false;
+    Node<T>* target = find(givenItem);
+    return remove(target);
 }
 
 template<typename T>
 void LinkedList<T>::insertAfrer(const T &givenTtem, const T &targetItem) {
 
+    insertBefore(createNode(givenTtem), find(targetItem));
 }
 
 template<typename T>
 void LinkedList<T>::insertBefore(const T &givenItem, const T &targetItem) {
-
+    insertAfter(createNode(givenItem), find(targetItem));
 }
 
 template<typename T>
 bool LinkedList<T>::empty() const {
-    return false;
+    return head==nullptr;
 }
 
 template<typename T>
 int LinkedList<T>::size() const {
-    return 0;
+    int size =0;
+    Node<T>* current = head;
+    while (current!= nullptr)
+    {
+        size++;
+        current=current->next;
+    }
+    return size;
 }
 
-template<typename T>
-bool LinkedList<T>::empty() {
-    return false;
-}
-
-template<typename T>
-int LinkedList<T>::size() {
-    return 0;
-}
 
 template<typename T>
 T &LinkedList<T>::front() {
-    return <#initializer#>;
+    return head->data;
 }
 
 template<typename T>
 T &LinkedList<T>::back() {
-    return <#initializer#>;
+    return tail->data;
 }
 
 template<typename T>
@@ -67,6 +74,8 @@ void LinkedList<T>::pop_back() {
 
 template<typename T>
 void LinkedList<T>::push_back(const T &item) {
+    if (head== nullptr)
+        createNode(item);
 
 }
 
@@ -112,6 +121,7 @@ void LinkedList<T>::insertAfter(Node<T> *insertThis, Node<T> *target) {
 template<typename T>
 void LinkedList<T>::insertBefore(Node<T> *insertThis, Node<T> *target) {
 
+    // check adding to the very front and the very back
     insertThis->next=target;
     insertThis->prev = target->prev;
 
@@ -122,7 +132,13 @@ void LinkedList<T>::insertBefore(Node<T> *insertThis, Node<T> *target) {
 template<typename T>
 bool LinkedList<T>::remove(Node<T> *target) {
 
+
     // check edge cases
+    if(target==head)
+    {
+        head=target->next;
+
+    }
 
 
     // remove something in the middle with stuff on both sides
