@@ -17,7 +17,7 @@ private:
     Node<T>* createNode(T data, Node<T>* next = nullptr, Node<T>* prev = nullptr);
 
     // returns the address of a node containing item, otherwise return nullptr
-    Node<T>*& find(T item);
+    Node<T>* find(T item);
 
     // remove the target node passed to it
     bool remove(Node<T>* target);
@@ -59,9 +59,11 @@ public:
     // insert the given item before a node containing the target item
     void insertBefore(const T& givenItem, const T& targetItem);
 
-    void insertAfrer(const T& givenTtem, const T& targetItem);
+    void insertAfter(const T& givenItem, const T& targetItem);
 
     bool remove(const T& givenItem);
+
+    LinkedList<T>& operator+=(const T& item);
 
     template<typename S>
     friend std::ostream&  operator<<(std::ostream& out, const LinkedList<S>& list);
@@ -70,5 +72,5 @@ public:
 
 
 
-#include "LinkedList.h"
+#include "LinkedList.cpp"
 #endif //LINKED_LIST_LEARNING_LINKEDLIST_H

@@ -24,14 +24,15 @@ bool LinkedList<T>::remove(const T &givenItem) {
 }
 
 template<typename T>
-void LinkedList<T>::insertAfrer(const T &givenTtem, const T &targetItem) {
+void LinkedList<T>::insertAfter(const T &givenItem, const T &targetItem) {
 
-    insertBefore(createNode(givenTtem), find(targetItem));
+    insertAfter(createNode(givenItem), find(targetItem));
 }
 
 template<typename T>
 void LinkedList<T>::insertBefore(const T &givenItem, const T &targetItem) {
-    insertAfter(createNode(givenItem), find(targetItem));
+    insertBefore(createNode(givenItem), find(targetItem));
+
 }
 
 template<typename T>
@@ -64,39 +65,63 @@ T &LinkedList<T>::back() {
 
 template<typename T>
 void LinkedList<T>::pop_front() {
-
+    remove(head);
 }
 
 template<typename T>
 void LinkedList<T>::pop_back() {
-
+    remove(tail);
 }
 
 template<typename T>
 void LinkedList<T>::push_back(const T &item) {
-    if (head== nullptr)
+    if (head== nullptr) {
         createNode(item);
-
+    }
+    else
+        insertAfter(createNode(item), tail);
 }
 
 template<typename T>
 void LinkedList<T>::push_front(const T &item) {
-
+    if (head== nullptr)
+        createNode(item);
+    else
+        insertBefore(createNode(item), head);
 }
 
 template<typename T>
 LinkedList<T>& LinkedList<T>::operator=(const LinkedList<T> &copy) {
-    return LinkedList<T>();
+    if (this==&copy)
+        return *this;
+
+    while(!empty())
+    {
+        pop_back();
+    }
+
+    Node<T>* current;
+    current = copy.head;
+    while(current!= nullptr)
+    {
+        push_back(current->data);
+        current=current->next;
+    }
+    delete [] current;
+    return *this;
 }
 
 template<typename T>
 LinkedList<T>::~LinkedList() {
-
+    while(!empty())
+    {
+        pop_back();
+    }
 }
 
 template<typename T>
 LinkedList<T>::LinkedList(const LinkedList<T> &copy) {
-
+    *this=copy;
 }
 
 template<typename T>
@@ -106,60 +131,104 @@ LinkedList<T>::LinkedList() {
 
 template<typename T>
 void LinkedList<T>::addFirstNode(T data) {
-    Node<T>* newNode = new Node<T>*;
-    head=newNode;
-    tail=newNode;
-    newNode->data = data;
+    createNode(data);
 }
 
 template<typename T>
 void LinkedList<T>::insertAfter(Node<T> *insertThis, Node<T> *target) {
+    if(target==tail)
+    {
 
-    insertBefore(insertThis, target->next);
+        Node<T>* newNode = new Node<T>();
+        newNode->data = insertThis->data;
+        newNode->next= nullptr;
+        newNode->prev = tail;
+        tail->next=newNode;
+        tail = newNode;
+    }
+    else
+        insertBefore(insertThis, target->next);
 }
 
 template<typename T>
 void LinkedList<T>::insertBefore(Node<T> *insertThis, Node<T> *target) {
 
-    // check adding to the very front and the very back
-    insertThis->next=target;
-    insertThis->prev = target->prev;
+    if (target==head)
+    {
+        Node<T> *n = new Node<T>();
+        n->data = insertThis->data;
+        n->next = head;
+        n->prev = nullptr;
+        head->prev = n;
+        head = n;
+    }
+    // check adding to the very front and the very back of the list
+    else
+    {
+        insertThis->next = target;
+        insertThis->prev = target->prev;
 
-    target->prev->next = insertThis;
-    target->prev = insertThis;
+        target->prev->next = insertThis;
+        target->prev = insertThis;
+    }
 }
 
 template<typename T>
 bool LinkedList<T>::remove(Node<T> *target) {
 
 
+    if (head==tail && head!= nullptr) // only one thing in list
+    {
+        head= nullptr;
+        tail= nullptr;
+        delete [] target;
+        return true;
+    }
     // check edge cases
-    if(target==head)
+    else if(target==head) // deleting first element
     {
         head=target->next;
-
+        head->prev= nullptr;
+        delete [] target;
+        return true;
+    }
+    else if (target==tail) // deleting last element
+    {
+        tail=target->prev;
+        tail->next= nullptr;
+        delete [] target;
+        return true;
     }
 
+    else if (target!= nullptr)// remove something in the middle with stuff on both sides
+    {
+        target->next->prev = target->prev;
+        target->prev->next = target->next;
+        delete [] target;
+        return true;
+    }
 
-    // remove something in the middle with stuff on both sides
-    target->next->prev = target->prev;
-    target->prev->next = target->next;
-
-    delete [] target;
+    return false;
 }
 
 template<typename T>
-Node<T> *LinkedList<T>::createNode(T data, Node<T> *next, Node<T> *prev) {
-    Node<T>* newNode = new Node<T>*;
+Node<T>* LinkedList<T>::createNode(T data, Node<T> *next, Node<T> *prev) {
+    Node<T> *newNode = new Node<T>();
     newNode->data = data;
     newNode->next=next;
     newNode->prev = prev;
-    return nullptr;
+    if(head== nullptr)
+    {
+        head=newNode;
+        tail=newNode;
+    }
+    return newNode;
 }
 
 template<typename T>
-Node<T> *&LinkedList<T>::find(T item) {
-    Node<T>* current = head;
+Node<T> *LinkedList<T>::find(T item) {
+    Node<T> *current;
+    current=head;
     while(current != nullptr)
     {
         if (current->data==item)
@@ -168,9 +237,15 @@ Node<T> *&LinkedList<T>::find(T item) {
         }
         current=current->next;
     }
-    return nullptr;
+    current=nullptr;
+    return current;
 }
 
+template<typename T>
+LinkedList<T> &LinkedList<T>::operator+=(const T &item) {
+    push_back(item);
+    return *this;
+}
 
 
 #endif
